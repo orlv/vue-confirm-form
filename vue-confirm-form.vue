@@ -143,6 +143,8 @@
         flex-direction: column;
         align-items: center;
         border: 1px solid #e2e2e2;
+        max-height: 90vh;
+        overflow-y: scroll;
     }
 
     .vue-confirm-form-main select {
