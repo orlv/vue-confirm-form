@@ -4,6 +4,7 @@
         <div class="vue-confirm-form" v-if="busy" @click="cancel">
             <div @click.stop class="vue-confirm-form-main">
                 <div class="bold center mb-1 font-1_3">{{ title }}</div>
+                <div class="vue-confirm-error-message">{{ message }}</div>
                 <table>
                     <tbody>
                     <tr v-for="(fieldValue, fieldName) in formFields">
@@ -51,7 +52,8 @@
       return {
         busy: false,
         formFields: {},
-        form: {}
+        form: {},
+        message: ''
       }
     },
 
@@ -101,9 +103,16 @@
         }
       },
 
-      callConfirm: function () {
+      callConfirm: async function () {
         this.busy = false
-        this.callback(Object.assign({}, this.form))
+        this.message = ''
+
+        const res = await this.callback(Object.assign({}, this.form))
+
+        if (typeof res === 'string' && res.length > 0) {
+          this.busy = true
+          this.message = res
+        }
       },
 
       cancel: function () {
@@ -155,5 +164,10 @@
         text-align-last: center;
         background-color: #ffffff;
         padding: 0.5em;
+    }
+
+    .vue-confirm-error-message {
+        font-size: 0.9em;
+        color: #c41d25;
     }
 </style>
