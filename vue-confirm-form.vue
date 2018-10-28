@@ -107,6 +107,13 @@
         this.busy = false
         this.message = ''
 
+        Object.keys(this.fields).forEach(field => {
+          if (typeof this.fields[field] === 'number' && typeof this.form[field] === 'string') {
+            const val = parseFloat(this.form[field])
+            this.form[field] = isNaN(val) ? '' : val
+          }
+        })
+
         const res = await this.callback(Object.assign({}, this.form))
 
         if (typeof res === 'string' && res.length > 0) {
