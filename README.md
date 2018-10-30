@@ -17,6 +17,7 @@ npm i -D vue-confirm-form
               :confirm="'Change'"
               :title="'Form'"
               :fields="fields"
+              :disabled="disabledFields"
               :default="defaultFields"/>
 ```
 
@@ -43,6 +44,10 @@ data: function () {
       checkbox1: ['2, '3']
       select1: 'option2'
       text2: 'Hello'
+    },
+    
+    disabledFields: {
+      text2: true
     }
   }
 },

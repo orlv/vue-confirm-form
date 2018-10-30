@@ -9,7 +9,8 @@
                     <tbody>
                     <tr v-for="(fieldValue, fieldName) in formFields">
                         <td>{{ fieldName }}</td>
-                        <td v-if="typeof fieldValue === 'string'">
+                        <td v-if="disabledFields[fieldName]">{{ form[fieldName] }}</td>
+                        <td v-else-if="typeof fieldValue === 'string'">
                             <input v-model="form[fieldName]" type="text" class="" :title="fieldName"/>
                         </td>
                         <td v-else-if="typeof fieldValue === 'number'">
@@ -57,7 +58,7 @@
       }
     },
 
-    props: ['callback', 'title', 'text', 'confirm', 'fields', 'default'],
+    props: ['callback', 'title', 'text', 'confirm', 'fields', 'default', 'disabled'],
 
     created () {
       this.extractDefaultForm()
@@ -70,6 +71,10 @@
     },
 
     computed: {
+      disabledFields: function () {
+        return typeof this.disabled === 'object' ? this.disabled : {}
+      },
+
       buttonText: function () {
         return this.busy ? 'Cancel' : this.text
       },
