@@ -30,6 +30,11 @@
                                 <option v-for="option in formFields[fieldName]">{{ option }}</option>
                             </select>
                         </td>
+                        <td v-else-if="typeof fieldValue === 'boolean'">
+                            <input title="" class="css-checkbox" :id="`vue-confirm-form-${fieldName}`"
+                                   type="checkbox" v-model="form[fieldName]">
+                            <label :for="`vue-confirm-form-${fieldName}`" class="css-label"></label>
+                        </td>
                     </tr>
                     <tr>
                         <td colspan="2" class="center p-1 font-1_3">
