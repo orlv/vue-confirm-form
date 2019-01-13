@@ -3,7 +3,13 @@
         <span class="text-button p-0" :class="{'text-button-green': !busy }" @click="click">{{ buttonText }}</span>
         <div v-if="busy" class="vue-confirm-form" @click="cancel">
             <div class="vue-confirm-form-main" @click.stop>
-                <div class="bold center mb-1 font-1_3">{{ title }}</div>
+                <div class="confirm-form-copy-paste-buttons">
+                    <div class="button-gray cursor-pointer w4 font-09 center mr-1" @click="copyToClipboard">copy
+                    </div>
+                    <div class="button-gray cursor-pointer w4 font-09 center" @click="pasteFromClipboard">paste
+                    </div>
+                </div>
+                <div class="bold center font-1_3 mb-1">{{ title }}</div>
                 <div class="vue-confirm-error-message">{{ message }}</div>
                 <table>
                     <tbody>
@@ -30,11 +36,6 @@
                                 <option v-for="option in formFields[fieldName]">{{ option }}</option>
                             </select>
                         </td>
-                        <td v-else-if="typeof fieldValue === 'boolean'">
-                            <input :id="`vue-confirm-form-${fieldName}`" v-model="form[fieldName]" title=""
-                                   class="css-checkbox" type="checkbox">
-                            <label :for="`vue-confirm-form-${fieldName}`" class="css-label"></label>
-                        </td>
                     </tr>
                     <tr>
                         <td colspan="2" class="center p-1 font-1_3">
@@ -49,8 +50,6 @@
 </template>
 
 <script>
-import 'rlv-styles/styles.css'
-
 export default {
   props: ['callback', 'title', 'text', 'confirm', 'fields', 'default', 'disabled'],
 
@@ -88,6 +87,35 @@ export default {
   },
 
   methods: {
+    copyToClipboard: async function () {
+      try {
+        if (navigator.clipboard) {
+          const textForm = JSON.stringify(this.form)
+
+          await navigator.clipboard.writeText(textForm)
+        }
+      } catch (e) {
+        console.error(`Can't copy to clipboard`, e)
+      }
+    },
+
+    pasteFromClipboard: async function () {
+      try {
+        if (navigator.clipboard) {
+          const textForm = await navigator.clipboard.readText()
+          const objForm = JSON.parse(textForm)
+
+          Object.keys(objForm).forEach(field => {
+            if (field in this.form) {
+              this.form[field] = objForm[field]
+            }
+          })
+        }
+      } catch (e) {
+        console.error(`Can't paste from clipboard`, e)
+      }
+    },
+
     extractDefaultForm: function () {
       this.formFields = Object.assign({}, this.fields) || {}
 
@@ -189,5 +217,13 @@ export default {
     .vue-confirm-error-message {
         font-size: 0.9em;
         color: #c41d25;
+    }
+
+    .confirm-form-copy-paste-buttons {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        width: 100%;
+        margin: -1.5em -3em 0.5em 0;
     }
 </style>
