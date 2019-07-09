@@ -36,7 +36,7 @@ data: function () {
       text1: '',
       text2: '',
       num: 123,
-      checkbox1: [{ 'title 1': '1' }, { 'title 2': '2' }, { 'title 3': '3' }]
+      checkbox1: { 'val1': 'val1', 'val2': 'val2', 'val3': 'val3' },
       select1: ['option1', 'option2', 'option3', 'option4']
     },
 

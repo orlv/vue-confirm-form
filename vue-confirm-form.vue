@@ -25,16 +25,28 @@
                         <td v-else-if="Array.isArray(fieldValue)">
                             <div v-if="typeof fieldValue[0] === 'object'">
                                 <div v-for="(checkbox, n) in fieldValue">
-                                    <input :id="`vue-confirm-form-${fieldName}-${n}`" v-model="form[fieldName]" title=""
+                                    <input :id="`vue-confirm-form-${fieldName}-${n}`"
+                                           v-model="form[fieldName]" title=""
                                            class="css-checkbox" type="checkbox"
                                            :value="Object.values(checkbox)[0]">
-                                    <label :for="`vue-confirm-form-${fieldName}-${n}`" class="css-label">
+                                    <label :for="`vue-confirm-form-${fieldName}-${n}`"
+                                           class="css-label">
                                         {{ Object.keys(checkbox)[0] }}</label>
                                 </div>
                             </div>
                             <select v-else v-model="form[fieldName]" :title="fieldName">
-                                <option v-for="option in formFields[fieldName]">{{ option }}</option>
+                                <option v-for="option in formFields[fieldName]">{{ option }}
+                                </option>
                             </select>
+                        </td>
+                        <td v-else-if="typeof fieldValue === 'object'">
+                            <div v-for="checkbox in fieldValue">
+                                <input :id="`vue-confirm-form-${fieldName}-${checkbox}`" v-model="form[fieldName]"
+                                       title="" class="css-checkbox" type="checkbox"
+                                       :value="checkbox">
+                                <label :for="`vue-confirm-form-${fieldName}-${checkbox}`" class="css-label">
+                                    {{ checkbox }}</label>
+                            </div>
                         </td>
                         <td v-else-if="typeof fieldValue === 'boolean'">
                             <input :id="`vue-confirm-form-${fieldName}`" v-model="form[fieldName]" title=""
@@ -130,6 +142,8 @@ export default {
         if (Array.isArray(val)) {
           // Checkbox or select
           acc[field] = typeof val[0] === 'object' ? [] : val[0]
+        } else if (typeof val === 'object') {
+          acc[field] = acc[field] ? Object.keys(acc[field]) : []
         } else {
           acc[field] = val
         }
@@ -140,7 +154,13 @@ export default {
       if (typeof this.default === 'object') {
         Object.keys(this.default).forEach(key => {
           if (key in this.form) {
-            this.form[key] = Array.isArray(this.default[key]) ? this.default[key].slice() : this.default[key]
+            const val = this.default[key]
+
+            this.form[key] = Array.isArray(val)
+              ? val.slice()
+              : typeof val === 'object'
+                ? Object.keys(val)
+                : val
           }
         })
       }
@@ -150,15 +170,27 @@ export default {
       this.busy = false
       this.message = ''
 
-      Object.keys(this.fields).forEach(field => {
-        if ((typeof this.fields[field] === 'number' || (Array.isArray(this.fields[field]) && typeof this.fields[field][0] === 'number')) && typeof this.form[field] === 'string') {
-          const val = parseFloat(this.form[field])
+      const out = {}
 
-          this.form[field] = isNaN(val) ? '' : val
+      Object.keys(this.fields).forEach(field => {
+        const inVal = this.fields[field]
+        const resVal = this.form[field]
+
+        if (typeof inVal === 'number' && typeof resVal === 'string') {
+          const num = parseFloat(resVal)
+
+          out[field] = isNaN(num) ? '' : num
+        } else if (typeof inVal === 'object' && !Array.isArray(inVal)) {
+          out[field] = resVal.reduce((acc, field) => {
+            acc[field] = field
+            return acc
+          }, {})
+        } else {
+          out[field] = resVal
         }
       })
 
-      const res = await this.callback(Object.assign({}, this.form))
+      const res = await this.callback(out)
 
       if (typeof res === 'string' && res.length > 0) {
         this.busy = true
