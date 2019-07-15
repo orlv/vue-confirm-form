@@ -176,7 +176,7 @@ export default {
         const inVal = this.fields[field]
         const resVal = this.form[field]
 
-        if (typeof inVal === 'number' && typeof resVal === 'string') {
+        if ((typeof inVal === 'number' || (Array.isArray(inVal) && typeof inVal[0] === 'number')) && typeof resVal === 'string') {
           const num = parseFloat(resVal)
 
           out[field] = isNaN(num) ? '' : num
