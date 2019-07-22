@@ -40,7 +40,7 @@
                             </select>
                         </td>
                         <td v-else-if="typeof fieldValue === 'object'">
-                            <div v-for="checkbox in fieldValue">
+                            <div v-for="checkbox in Object.keys(fieldValue)">
                                 <input :id="`vue-confirm-form-${fieldName}-${checkbox}`" v-model="form[fieldName]"
                                        title="" class="css-checkbox" type="checkbox"
                                        :value="checkbox">
@@ -181,8 +181,9 @@ export default {
 
           out[field] = isNaN(num) ? '' : num
         } else if (typeof inVal === 'object' && !Array.isArray(inVal)) {
-          out[field] = resVal.reduce((acc, field) => {
-            acc[field] = field
+          out[field] = resVal.reduce((acc, title) => {
+            acc[title] = inVal[title]
+            console.log(acc)
             return acc
           }, {})
         } else {
