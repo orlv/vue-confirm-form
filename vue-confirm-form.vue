@@ -13,7 +13,7 @@
                 <div class="vue-confirm-error-message">{{ message }}</div>
                 <table>
                     <tbody>
-                    <tr v-for="(fieldValue, fieldName) in formFields">
+                    <tr v-for="(fieldValue, fieldName) in formFields" :key="fieldName">
                         <td>{{ fieldName }}</td>
                         <td v-if="disabledFields[fieldName]">{{ form[fieldName] }}</td>
                         <td v-else-if="typeof fieldValue === 'string'">
@@ -24,7 +24,7 @@
                         </td>
                         <td v-else-if="Array.isArray(fieldValue)">
                             <div v-if="typeof fieldValue[0] === 'object'">
-                                <div v-for="(checkbox, n) in fieldValue">
+                                <div v-for="(checkbox, n) in fieldValue" :key="n">
                                     <input :id="`vue-confirm-form-${fieldName}-${n}`"
                                            v-model="form[fieldName]" title=""
                                            class="css-checkbox" type="checkbox"
@@ -35,13 +35,13 @@
                                 </div>
                             </div>
                             <select v-else v-model="form[fieldName]" :title="fieldName">
-                                <option v-for="option in formFields[fieldName]">{{ option }}
-                                </option>
+                                <option v-for="option in formFields[fieldName]" :key="option">{{ option }}</option>
                             </select>
                         </td>
                         <td v-else-if="typeof fieldValue === 'object'">
-                            <div v-for="checkbox in Object.keys(fieldValue)">
-                                <input :id="`vue-confirm-form-${fieldName}-${checkbox}`" v-model="form[fieldName]"
+                            <div v-for="checkbox in Object.keys(fieldValue)" :key="checkbox">
+                                <input :id="`vue-confirm-form-${fieldName}-${checkbox}`"
+                                       v-model="form[fieldName]"
                                        title="" class="css-checkbox" type="checkbox"
                                        :value="checkbox">
                                 <label :for="`vue-confirm-form-${fieldName}-${checkbox}`" class="css-label">
@@ -70,7 +70,7 @@
 export default {
   props: ['callback', 'title', 'text', 'confirm', 'fields', 'default', 'disabled'],
 
-  data: function () {
+  data () {
     return {
       busy: false,
       formFields: {},
@@ -80,21 +80,21 @@ export default {
   },
 
   computed: {
-    disabledFields: function () {
+    disabledFields () {
       return typeof this.disabled === 'object' ? this.disabled : {}
     },
 
-    buttonText: function () {
+    buttonText () {
       return this.busy ? 'Cancel' : this.text
     },
 
-    confirmText: function () {
+    confirmText () {
       return this.confirm ? this.confirm : 'OK'
     }
   },
 
   watch: {
-    fields: function () {
+    fields () {
       this.extractDefaultForm()
     }
   },
@@ -104,7 +104,7 @@ export default {
   },
 
   methods: {
-    copyToClipboard: async function () {
+    async copyToClipboard () {
       try {
         if (navigator.clipboard) {
           const textForm = JSON.stringify(this.form)
@@ -116,7 +116,7 @@ export default {
       }
     },
 
-    pasteFromClipboard: async function () {
+    async pasteFromClipboard () {
       try {
         if (navigator.clipboard) {
           const textForm = await navigator.clipboard.readText()
@@ -133,7 +133,7 @@ export default {
       }
     },
 
-    extractDefaultForm: function () {
+    extractDefaultForm () {
       this.formFields = Object.assign({}, this.fields) || {}
 
       this.form = Object.keys(this.formFields).reduce((acc, field) => {
@@ -166,7 +166,7 @@ export default {
       }
     },
 
-    callConfirm: async function () {
+    async callConfirm () {
       this.busy = false
       this.message = ''
 
@@ -199,12 +199,12 @@ export default {
       }
     },
 
-    cancel: function () {
+    cancel () {
       this.busy = false
       this.extractDefaultForm()
     },
 
-    click: function () {
+    click () {
       if (this.busy) {
         this.cancel()
       } else {
