@@ -93,14 +93,7 @@ export default {
     }
   },
 
-  watch: {
-    fields () {
-      this.extractDefaultForm()
-    }
-  },
-
   created () {
-    this.extractDefaultForm()
   },
 
   methods: {
@@ -208,6 +201,7 @@ export default {
       if (this.busy) {
         this.cancel()
       } else {
+        this.extractDefaultForm()
         this.busy = true
       }
     }
