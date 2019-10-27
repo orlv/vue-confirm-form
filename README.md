@@ -11,26 +11,27 @@ npm i -D vue-confirm-form
 
 #### Example
 
-```
+```javascript
 <confirm-form :callback="form => myMethod(form)"
               :text="'Show form'"
               :confirm="'Change'"
               :title="'Form'"
               :fields="fields"
               :disabled="disabledFields"
-              :default="defaultFields"/>
+              :default="defaultFields"
+              @onChange="onChange"/>
 ```
 
-```
+```javascript
 import ConfirmForm from 'vue-confirm-form'
 ```
 
-```
+```javascript
 components: {
-    ConfirmForm
+  ConfirmForm
 },
 
-data: function () {
+data () {
   return {
     fields: {
       text1: '',
@@ -53,8 +54,16 @@ data: function () {
 },
 
 methods: {
-  myMethod: function () {
+  myMethod () {
     console.log('Form:', form)
+  },
+
+  formChanged (key, val) {
+    console.log(`Changed '${key}':`, val)
+
+    if (key === 'text1') {
+      text2 = val
+    }
   }
 }
 ```

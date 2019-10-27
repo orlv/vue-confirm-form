@@ -75,6 +75,8 @@ export default {
       busy: false,
       formFields: {},
       form: {},
+      prevForm: {},
+      prevDefault: Object.assign({}, this.default),
       message: ''
     }
   },
@@ -94,6 +96,43 @@ export default {
   },
 
   created () {
+  },
+
+  watch: {
+    form: {
+      handler (val) {
+        const prevForm = this.prevForm
+
+        this.prevForm = Object.assign({}, val)
+
+        for (const key of Object.keys(val)) {
+          const newVal = val[key]
+
+          if (prevForm[key] !== newVal) {
+            this.$emit('onChange', key, newVal)
+            break
+          }
+        }
+      },
+      deep: true
+    },
+
+    default: {
+      handler (val) {
+        const prevDefault = this.prevDefault
+
+        this.prevDefault = Object.assign({}, val)
+
+        for (const key of Object.keys(val)) {
+          const newVal = val[key]
+
+          if (prevDefault[key] !== newVal) {
+            this.setFormValue(key, newVal)
+          }
+        }
+      },
+      deep: true
+    }
   },
 
   methods: {
@@ -129,7 +168,7 @@ export default {
     extractDefaultForm () {
       this.formFields = Object.assign({}, this.fields) || {}
 
-      this.form = Object.keys(this.formFields).reduce((acc, field) => {
+      this.form = this.prevForm = Object.keys(this.formFields).reduce((acc, field) => {
         const val = this.formFields[field]
 
         if (Array.isArray(val)) {
@@ -146,16 +185,22 @@ export default {
 
       if (typeof this.default === 'object') {
         Object.keys(this.default).forEach(key => {
-          if (key in this.form) {
-            const val = this.default[key]
-
-            this.form[key] = Array.isArray(val)
-              ? val.slice()
-              : typeof val === 'object'
-                ? Object.keys(val)
-                : val
-          }
+          this.setFormValue(key, this.default[key])
         })
+      }
+    },
+
+    /**
+     * @param {string} key
+     * @param {Array|object|string|number} val
+     */
+    setFormValue (key, val) {
+      if (key in this.form) {
+        this.form[key] = Array.isArray(val)
+          ? val.slice()
+          : typeof val === 'object'
+            ? Object.keys(val)
+            : val
       }
     },
 
