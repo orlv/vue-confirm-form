@@ -47,9 +47,9 @@ data () {
       text2: 'Hello'
     },
     
-    disabledFields: {
-      text2: true
-    }
+    disabledFields: [
+      'text2'
+    ]
   }
 },
 

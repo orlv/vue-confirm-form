@@ -83,7 +83,14 @@ export default {
 
   computed: {
     disabledFields () {
-      return typeof this.disabled === 'object' ? this.disabled : {}
+      const disabled = Array.isArray(this.disabled)
+        ? this.disabled.filter(field => typeof field === 'string')
+        : typeof this.disabled === 'object' ? Object.keys(this.disabled) : []
+
+      return disabled.reduce((res, field) => {
+        res[field] = true
+        return res
+      }, {})
     },
 
     buttonText () {
