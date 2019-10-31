@@ -69,7 +69,7 @@
 
 <script>
 export default {
-  props: ['callback', 'title', 'text', 'confirm', 'fields', 'default', 'disabled'],
+  props: ['getDefaultValues', 'callback', 'title', 'text', 'confirm', 'fields', 'default', 'disabled'],
 
   data () {
     return {
@@ -96,7 +96,7 @@ export default {
     },
 
     buttonText () {
-      return this.busy ? 'Cancel' : this.text
+      return this.busy ? 'Cancel' : this.loading ? 'Loading' : this.text
     },
 
     confirmText () {
@@ -174,8 +174,8 @@ export default {
       }
     },
 
-    extractDefaultForm () {
-      this.formFields = Object.assign({}, this.fields) || {}
+    extractDefaultForm (defaultFields) {
+      this.formFields = Object.assign({}, this.fields || {})
 
       this.form = this.prevForm = Object.keys(this.formFields).reduce((acc, field) => {
         const val = this.formFields[field]
@@ -192,9 +192,11 @@ export default {
         return acc
       }, {})
 
-      if (typeof this.default === 'object') {
-        Object.keys(this.default).forEach(key => {
-          this.setFormValue(key, this.default[key])
+      const defaultValues = defaultFields || this.default
+
+      if (defaultValues) {
+        Object.keys(defaultValues).forEach(key => {
+          this.setFormValue(key, defaultValues[key])
         })
       }
     },
@@ -256,17 +258,31 @@ export default {
 
     cancel () {
       this.busy = false
+      this.loading = false
       this.message = ''
       this.badField = ''
       this.extractDefaultForm()
     },
 
-    click () {
-      if (this.busy) {
+    async click () {
+      if (this.loading) {
+        this.loading = false
+      } else if (this.busy) {
         this.cancel()
       } else {
-        this.extractDefaultForm()
-        this.busy = true
+        if (this.getDefaultValues) {
+          this.loading = true
+          const defaultValues = await this.getDefaultValues()
+
+          if (defaultValues && this.loading) {
+            this.loading = false
+            this.extractDefaultForm(defaultValues)
+            this.busy = true
+          }
+        } else {
+          this.extractDefaultForm()
+          this.busy = true
+        }
       }
     }
   },
