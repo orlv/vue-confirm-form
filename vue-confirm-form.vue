@@ -13,7 +13,8 @@
                 <div class="vue-confirm-error-message">{{ message }}</div>
                 <table>
                     <tbody>
-                    <tr v-for="(fieldValue, fieldName) in formFields" :key="fieldName">
+                    <tr v-for="(fieldValue, fieldName) in formFields" :key="fieldName"
+                        :class="{'validation-failed': fieldName === badField}">
                         <td>{{ fieldName }}</td>
                         <td v-if="disabledFields[fieldName]">{{ form[fieldName] }}</td>
                         <td v-else-if="typeof fieldValue === 'string'">
@@ -77,7 +78,8 @@ export default {
       form: {},
       prevForm: {},
       prevDefault: Object.assign({}, this.default),
-      message: ''
+      message: '',
+      badField: ''
     }
   },
 
@@ -214,6 +216,7 @@ export default {
     async callConfirm () {
       this.busy = false
       this.message = ''
+      this.badField = ''
 
       const out = {}
 
@@ -238,14 +241,23 @@ export default {
 
       const res = await this.callback(out)
 
-      if (typeof res === 'string' && res.length > 0) {
-        this.busy = true
-        this.message = res
+      console.log('res', res)
+      if (res) {
+        if (typeof res === 'string') {
+          this.busy = true
+          this.message = res
+        } else if (res.msg || res.field) {
+          this.busy = true
+          this.message = res.msg || ''
+          this.badField = res.field || ''
+        }
       }
     },
 
     cancel () {
       this.busy = false
+      this.message = ''
+      this.badField = ''
       this.extractDefaultForm()
     },
 
@@ -299,8 +311,9 @@ export default {
     }
 
     .vue-confirm-error-message {
-        font-size: 0.9em;
-        color: #c41d25;
+        font-size: 1.1em;
+        color: #ff284f;
+        margin-bottom: 1em;
     }
 
     .confirm-form-copy-paste-buttons {
@@ -309,5 +322,9 @@ export default {
         justify-content: flex-end;
         width: 100%;
         margin: -1.5em -3em 0.5em 0;
+    }
+
+    .validation-failed {
+        outline: 2px solid #ff284f;
     }
 </style>
