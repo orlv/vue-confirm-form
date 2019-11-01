@@ -31,7 +31,9 @@
                         <td v-else-if="typeof fieldValue === 'object'">
                             <div v-if="typeof form[fieldName] === 'string'">
                                 <select v-model="form[fieldName]" :title="fieldName">
-                                    <option v-for="(value, label) in fieldValue" :key="value" :value="value">{{ label }}</option>
+                                    <option v-for="(value, label) in fieldValue" :key="value" :value="value">{{ label
+                                        }}
+                                    </option>
                                 </select>
                             </div>
                             <div v-else v-for="(checkbox, label) in fieldValue" :key="checkbox">
@@ -139,6 +141,22 @@ export default {
   },
 
   methods: {
+    hookEsc () {
+      window.addEventListener('keydown', this.keyDownHandler)
+    },
+
+    removeEscHook () {
+      window.removeEventListener('keydown', this.keyDownHandler)
+    },
+
+    keyDownHandler (e) {
+      if (/Esc/.test(e.code)) {
+        this.cancel()
+      } else if (/Enter/.test(e.code)) {
+        this.callConfirm()
+      }
+    },
+
     async copyToClipboard () {
       try {
         if (navigator.clipboard) {
@@ -255,6 +273,7 @@ export default {
       this.message = ''
       this.badField = ''
       this.extractDefaultForm()
+      this.removeEscHook()
       this.$emit('cancel')
     },
 
@@ -270,10 +289,12 @@ export default {
 
           if (defaultValues && this.loading) {
             this.loading = false
+            this.hookEsc()
             this.extractDefaultForm(defaultValues)
             this.busy = true
           }
         } else {
+          this.hookEsc()
           this.extractDefaultForm()
           this.busy = true
         }
