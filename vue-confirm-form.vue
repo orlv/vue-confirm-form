@@ -29,13 +29,18 @@
                             </select>
                         </td>
                         <td v-else-if="typeof fieldValue === 'object'">
-                            <div v-for="checkbox in Object.keys(fieldValue)" :key="checkbox">
+                            <div v-if="typeof form[fieldName] === 'string'">
+                                <select v-model="form[fieldName]" :title="fieldName">
+                                    <option v-for="(value, label) in fieldValue" :key="value" :value="value">{{ label }}</option>
+                                </select>
+                            </div>
+                            <div v-else v-for="(checkbox, label) in fieldValue" :key="checkbox">
                                 <input :id="`vue-confirm-form-${fieldName}-${checkbox}`"
                                        v-model="form[fieldName]"
                                        title="" class="css-checkbox" type="checkbox"
                                        :value="checkbox">
                                 <label :for="`vue-confirm-form-${fieldName}-${checkbox}`" class="css-label">
-                                    {{ checkbox }}</label>
+                                    {{ label }}</label>
                             </div>
                         </td>
                         <td v-else-if="typeof fieldValue === 'boolean'">
@@ -218,7 +223,7 @@ export default {
           const num = parseFloat(resVal)
 
           out[field] = isNaN(num) ? '' : num
-        } else if (typeof inVal === 'object' && !Array.isArray(inVal)) {
+        } else if (typeof inVal === 'object' && !Array.isArray(inVal) && Array.isArray(resVal)) {
           out[field] = resVal.reduce((acc, title) => {
             acc[title] = inVal[title]
             console.log(acc)
