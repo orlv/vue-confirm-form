@@ -24,19 +24,8 @@
                             <input v-model="form[fieldName]" type="number" class="" :title="fieldName"/>
                         </td>
                         <td v-else-if="Array.isArray(fieldValue)">
-                            <div v-if="typeof fieldValue[0] === 'object'">
-                                <div v-for="(checkbox, n) in fieldValue" :key="n">
-                                    <input :id="`vue-confirm-form-${fieldName}-${n}`"
-                                           v-model="form[fieldName]" title=""
-                                           class="css-checkbox" type="checkbox"
-                                           :value="Object.values(checkbox)[0]">
-                                    <label :for="`vue-confirm-form-${fieldName}-${n}`"
-                                           class="css-label">
-                                        {{ Object.keys(checkbox)[0] }}</label>
-                                </div>
-                            </div>
-                            <select v-else v-model="form[fieldName]" :title="fieldName">
-                                <option v-for="option in formFields[fieldName]" :key="option">{{ option }}</option>
+                            <select v-model="form[fieldName]" :title="fieldName">
+                                <option v-for="option in fieldValue" :key="option">{{ option }}</option>
                             </select>
                         </td>
                         <td v-else-if="typeof fieldValue === 'object'">
@@ -181,8 +170,7 @@ export default {
         const val = this.formFields[field]
 
         if (Array.isArray(val)) {
-          // Checkbox or select
-          acc[field] = typeof val[0] === 'object' ? [] : val[0]
+          acc[field] = val[0]
         } else if (typeof val === 'object') {
           acc[field] = acc[field] ? Object.keys(acc[field]) : []
         } else {
