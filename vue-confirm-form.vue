@@ -250,6 +250,7 @@ export default {
       this.message = ''
       this.badField = ''
       this.extractDefaultForm()
+      this.$emit('cancel')
     },
 
     async click () {
