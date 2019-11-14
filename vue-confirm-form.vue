@@ -36,12 +36,12 @@
                                     </option>
                                 </select>
                             </div>
-                            <div v-else v-for="(checkbox, label) in fieldValue" :key="checkbox">
-                                <input :id="`vue-confirm-form-${fieldName}-${checkbox}`"
+                            <div v-else v-for="(checkboxValue, label) in fieldValue" :key="label">
+                                <input :id="`vue-confirm-form-${fieldName}-${label}`"
                                        v-model="form[fieldName]"
                                        title="" class="css-checkbox" type="checkbox"
-                                       :value="checkbox">
-                                <label :for="`vue-confirm-form-${fieldName}-${checkbox}`" class="css-label">
+                                       :value="label">
+                                <label :for="`vue-confirm-form-${fieldName}-${label}`" class="css-label">
                                     {{ label }}</label>
                             </div>
                         </td>
@@ -242,9 +242,8 @@ export default {
 
           out[field] = isNaN(num) ? '' : num
         } else if (typeof inVal === 'object' && !Array.isArray(inVal) && Array.isArray(resVal)) {
-          out[field] = resVal.reduce((acc, title) => {
-            acc[title] = inVal[title]
-            console.log(acc)
+          out[field] = resVal.reduce((acc, label) => {
+            acc[label] = inVal[label]
             return acc
           }, {})
         } else {
