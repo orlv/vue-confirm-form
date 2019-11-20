@@ -15,7 +15,7 @@
                     <tbody>
                     <tr v-for="(fieldValue, fieldName) in formFields" :key="fieldName"
                         :class="{'validation-failed': fieldName === badField}">
-                        <td>{{ fieldName }}</td>
+                        <td @click="onSelect(fieldName, form[fieldName])">{{ fieldName }}</td>
                         <td v-if="disabledFields[fieldName]">{{ form[fieldName] }}</td>
                         <td v-else-if="typeof fieldValue === 'string'">
                             <input v-model="form[fieldName]" type="text" class="" :title="fieldName"/>
@@ -141,6 +141,10 @@ export default {
   },
 
   methods: {
+    onSelect (field, val) {
+      this.$emit('onSelect', field, val)
+    },
+
     hookEsc () {
       window.addEventListener('keydown', this.keyDownHandler)
     },
