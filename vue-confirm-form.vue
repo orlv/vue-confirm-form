@@ -221,7 +221,6 @@ export default {
      * @param {Array|object|string|number} val
      */
     setFormValue (key, val) {
-      console.log('SET')
       if (key in this.form) {
         this.form[key] = Array.isArray(val)
           ? val.slice()
