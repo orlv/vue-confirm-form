@@ -25,7 +25,7 @@
                         </td>
                         <td v-else-if="Array.isArray(fieldValue)">
                             <select v-model="form[fieldName]" :title="fieldName">
-                                <option v-for="option in fieldValue" :key="option">{{ option }}</option>
+                                <option v-for="option in fieldValue" :key="option" :value="option">{{ option }}</option>
                             </select>
                         </td>
                         <td v-else-if="typeof fieldValue === 'object'">
