@@ -234,6 +234,7 @@ export default {
       this.busy = false
       this.message = ''
       this.badField = ''
+      this.removeEscHook()
 
       const out = {}
 
@@ -257,16 +258,21 @@ export default {
 
       const res = await this.callback(out)
 
-      console.log('res', res)
       if (res) {
         if (typeof res === 'string') {
           this.busy = true
+          this.hookEsc()
           this.message = res
         } else if (res.msg || res.field) {
           this.busy = true
+          this.hookEsc()
           this.message = res.msg || ''
           this.badField = res.field || ''
+        } else {
+          this.extractDefaultForm()
         }
+      } else {
+        this.extractDefaultForm()
       }
     },
 
