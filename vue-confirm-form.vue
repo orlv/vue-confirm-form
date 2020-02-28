@@ -29,7 +29,7 @@
                             </select>
                         </td>
                         <td v-else-if="typeof fieldValue === 'object'">
-                            <div v-if="typeof form[fieldName] === 'string'">
+                            <div v-if="typeof form[fieldName] === 'string' || typeof form[fieldName] === 'number'">
                                 <select v-model="form[fieldName]" :title="fieldName">
                                     <option v-for="(value, label) in fieldValue" :key="value" :value="value">{{ label
                                         }}
