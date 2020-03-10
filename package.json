@@ -1,6 +1,6 @@
 {
   "name": "vue-confirm-form",
-  "version": "1.9.8",
+  "version": "1.10.0",
   "description": "Vue form component",
   "main": "index.js",
   "repository": {
