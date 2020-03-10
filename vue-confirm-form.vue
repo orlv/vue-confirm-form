@@ -114,7 +114,7 @@ export default {
           const newVal = val[key]
 
           if (prevForm[key] !== newVal) {
-            this.$emit('onChange', key, newVal)
+            this.$emit('onChange', key, newVal, this.extract())
             break
           }
         }
@@ -230,16 +230,8 @@ export default {
       }
     },
 
-    async callConfirm () {
-      this.busy = false
-      this.message = ''
-      this.badField = ''
-      this.removeEscHook()
-
-      const out = {}
-
-      Object.keys(this.fields).forEach(field => {
-        const inVal = this.fields[field]
+    extract () {
+      return Object.entries(this.fields).reduce((out, [field, inVal]) => {
         const resVal = this.form[field]
 
         if ((typeof inVal === 'number' || (Array.isArray(inVal) && typeof inVal[0] === 'number')) && typeof resVal === 'string') {
@@ -254,8 +246,18 @@ export default {
         } else {
           out[field] = resVal
         }
-      })
 
+        return out
+      }, {})
+    },
+
+    async callConfirm () {
+      this.busy = false
+      this.message = ''
+      this.badField = ''
+      this.removeEscHook()
+
+      const out = this.extract()
       const res = await this.callback(out)
 
       if (res) {

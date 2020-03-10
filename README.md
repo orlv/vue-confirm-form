@@ -62,8 +62,8 @@ export default {
       }
     },
 
-    formChanged (key, val) {
-      console.log(`Changed '${key}':`, val)
+    onChange (key, val, form) {
+      console.log(`Changed '${key}':`, val, form)
 
       if (key === 'text1') {
         this.text2 = val
