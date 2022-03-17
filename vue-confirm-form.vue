@@ -1,15 +1,15 @@
-<template id="vue-confirm-form-template">
+<template>
     <div>
-        <span class="text-button p-0" :class="{'text-button-green': !busy }" @click="click">{{ buttonText }}</span>
+        <span class="start-button" :class="{'busy': !busy }" @click="click">{{ buttonText }}</span>
         <div v-if="busy" class="vue-confirm-form" @click="cancel">
             <div class="vue-confirm-form-main" @click.stop>
                 <div class="confirm-form-copy-paste-buttons">
-                    <div class="button-gray cursor-pointer w4 font-09 center mr-1" @click="copyToClipboard">copy
+                    <div class="vue-confirm-clipboard margin-r1" @click="copyToClipboard">copy
                     </div>
-                    <div class="button-gray cursor-pointer w4 font-09 center" @click="pasteFromClipboard">paste
+                    <div class="vue-confirm-clipboard" @click="pasteFromClipboard">paste
                     </div>
                 </div>
-                <div class="bold center font-1_3 mb-1">{{ title }}</div>
+                <div class="vue-confirm-title">{{ title }}</div>
                 <div class="vue-confirm-error-message">{{ message }}</div>
                 <table>
                     <tbody>
@@ -31,29 +31,37 @@
                         <td v-else-if="typeof fieldValue === 'object'">
                             <div v-if="typeof form[fieldName] === 'string' || typeof form[fieldName] === 'number'">
                                 <select v-model="form[fieldName]" :title="fieldName">
-                                    <option v-for="(value, label) in fieldValue" :key="value" :value="value">{{ label
-                                        }}
+                                    <option v-for="(value, label) in fieldValue"
+                                            :key="value"
+                                            :value="value">{{ label }}
                                     </option>
                                 </select>
                             </div>
-                            <div v-else v-for="(checkboxValue, label) in fieldValue" :key="label">
-                                <input :id="`vue-confirm-form-${fieldName}-${label}`"
-                                       v-model="form[fieldName]"
-                                       title="" class="css-checkbox" type="checkbox"
-                                       :value="label">
-                                <label :for="`vue-confirm-form-${fieldName}-${label}`" class="css-label">
-                                    {{ label }}</label>
+                            <div v-else v-for="(checkboxValue, value) in fieldValue" :key="value">
+                                <div v-if="form[fieldName].includes(value)"
+                                     class="cursor-pointer"
+                                     @click="form[fieldName].splice(form[fieldName].findIndex(v => v === value), 1)">
+                                    <span>☑</span>
+                                    <span>{{ value }}</span>
+                                </div>
+                                <div v-else
+                                     class="cursor-pointer"
+                                     @click="form[fieldName].push(value)">
+                                    <span>☐</span>
+                                    <span>{{ value }}</span>
+                                </div>
                             </div>
                         </td>
                         <td v-else-if="typeof fieldValue === 'boolean'">
-                            <input :id="`vue-confirm-form-${fieldName}`" v-model="form[fieldName]" title=""
-                                   class="css-checkbox" type="checkbox">
-                            <label :for="`vue-confirm-form-${fieldName}`" class="css-label"></label>
+                            <div class="cursor-pointer" @click="form[fieldName] = !form[fieldName]">
+                                <span v-if="form[fieldName]">☑</span>
+                                <span v-else>☐</span>
+                            </div>
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2" class="center p-1 font-1_3">
-                            <span class="text-button text-button-green" @click="callConfirm">{{ confirmText }}</span>
+                        <td colspan="2" class="confirm-button">
+                            <span @click="callConfirm">{{ confirmText }}</span>
                         </td>
                     </tr>
                     </tbody>
@@ -311,62 +319,123 @@ export default {
         }
       }
     }
-  },
-
-  template: '#vue-confirm-form-template'
+  }
 }
 </script>
 
 <style scoped>
-    .vue-confirm-form {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(249, 249, 249, 0.89);
-    }
+.vue-confirm-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(249, 249, 249, 0.89);
+}
 
-    .vue-confirm-form-main {
-        background-color: #ffffff;
-        padding: 2em;
-        border-radius: 0.3em;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        border: 1px solid #e2e2e2;
-        max-height: 90vh;
-        overflow-y: scroll;
-    }
+.vue-confirm-form-main {
+    background-color: #ffffff;
+    padding: 2em;
+    border-radius: 0.3em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #e2e2e2;
+    max-height: 90vh;
+    overflow-y: scroll;
+}
 
-    .vue-confirm-form-main select {
-        outline: none;
-        font-size: 1em;
-        -webkit-appearance: none;
-        border: 1px solid #dedede;
-        text-align-last: center;
-        background-color: #ffffff;
-        padding: 0.5em;
-    }
+.vue-confirm-form-main select {
+    outline: none;
+    font-size: 1em;
+    -webkit-appearance: none;
+    border: 1px solid #dedede;
+    text-align-last: center;
+    background-color: #ffffff;
+    padding: 0.5em;
+}
 
-    .vue-confirm-error-message {
-        font-size: 1.1em;
-        color: #ff284f;
-        margin-bottom: 1em;
-    }
+.vue-confirm-error-message {
+    font-size: 1.1em;
+    color: #ff284f;
+    margin-bottom: 1em;
+}
 
-    .confirm-form-copy-paste-buttons {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        width: 100%;
-        margin: -1.5em -3em 0.5em 0;
-    }
+.confirm-form-copy-paste-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 100%;
+    margin: -1.5em -3em 0.5em 0;
+}
 
-    .validation-failed {
-        outline: 2px solid #ff284f;
-    }
+.validation-failed {
+    outline: 2px solid #ff284f;
+}
+
+.start-button {
+    padding: 0;
+    cursor: pointer;
+    font-weight: 700;
+    text-align: center;
+    user-select: none;
+}
+
+.start-button.busy {
+    color: #70ab6c;
+}
+
+.start-button.busy:hover {
+    color: #409a39;
+}
+
+.vue-confirm-clipboard {
+    background-color: #f1f1f1;
+    color: #000000;
+    cursor: pointer;
+    width: 4em;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.vue-confirm-clipboard:hover {
+    background-color: #ebebeb;
+}
+
+.margin-r1 {
+    margin-right: 1em;
+}
+
+.vue-confirm-title {
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.3em;
+    margin-bottom: 1em;
+}
+
+.confirm-button {
+    text-align: center;
+    padding: 1em;
+    font-size: 1.3em;
+}
+
+.confirm-button > span {
+    padding: 0 0.6em;
+    cursor: pointer;
+    font-weight: 700;
+    text-align: center;
+    user-select: none;
+    color: #70ab6c;
+}
+
+.confirm-button > span:hover {
+    color: #409a39;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
 </style>
