@@ -108,9 +108,6 @@ export default {
     }
   },
 
-  created () {
-  },
-
   watch: {
     form: {
       handler (val) {
@@ -146,6 +143,9 @@ export default {
       },
       deep: true
     }
+  },
+
+  created () {
   },
 
   methods: {
@@ -304,6 +304,7 @@ export default {
       } else {
         if (this.getDefaultValues) {
           this.loading = true
+
           const defaultValues = await this.getDefaultValues()
 
           if (defaultValues && this.loading) {
