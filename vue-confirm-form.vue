@@ -37,7 +37,7 @@
                                     </option>
                                 </select>
                             </div>
-                            <div v-else v-for="(checkboxValue, value) in fieldValue" :key="value">
+                            <div v-for="(checkboxValue, value) in fieldValue" v-else :key="value">
                                 <div v-if="form[fieldName].includes(value)"
                                      class="cursor-pointer"
                                      @click="form[fieldName].splice(form[fieldName].findIndex(v => v === value), 1)">
@@ -74,6 +74,8 @@
 <script>
 export default {
   props: ['getDefaultValues', 'callback', 'title', 'text', 'confirm', 'fields', 'default', 'disabled'],
+
+  emits: ['on-select', 'on-change'],
 
   data () {
     return {
@@ -119,7 +121,7 @@ export default {
           const newVal = val[key]
 
           if (prevForm[key] !== newVal) {
-            this.$emit('onChange', key, newVal, this.extract())
+            this.$emit('on-change', key, newVal, this.extract())
             break
           }
         }
@@ -150,7 +152,7 @@ export default {
 
   methods: {
     onSelect (field, val) {
-      this.$emit('onSelect', field, val)
+      this.$emit('on-select', field, val)
     },
 
     hookEsc () {
