@@ -46,7 +46,7 @@ export default {
         select1: 'option2',
         text2: 'Hello'
       },
-    
+
       disabledFields: [
         'text2'
       ]
@@ -56,7 +56,7 @@ export default {
   methods: {
     myMethod (form) {
       console.log('Form:', form)
-    
+
       if (form.text2 !== 'test') {
         return { field: 'text2', msg: 'Validation failed' }
       }
